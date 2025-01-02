@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 // Configuração do CORS para permitir conexões externas
 const io = new Server(server, {
-  cors: { origin: import.meta.env.FRONT_BASE_URL }, // Permitir conexões do frontend
+  cors: { origin: process.env.FRONT_BASE_URL }, // Permitir conexões do frontend
 });
 
 app.use(cors());
