@@ -22,8 +22,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 const io = new Server(server, {
-  cors: corsOptions,
-  transports: ['websocket', 'polling']
+  cors: {
+    origin: 'https://api-scoreboard.vercel.app',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
 });
 
 // Teste para verificar o servidor
