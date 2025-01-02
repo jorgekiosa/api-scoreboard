@@ -28,7 +28,7 @@ const io = new Server(server, {
 // Teste para verificar o servidor
 app.get('/', (req, res) => {
   res.send(`Servidor WebSocket rodando! ${corsOptions}`);
-  console.log('corsOptions', corsOptions)
+  console.log('corsOptions')
 });
 
 const connectedClients = {};
@@ -115,7 +115,7 @@ io.on('connection', (socket) => {
 });
 
 // Porta onde o servidor irá rodar
-const PORT = 3007;
+const PORT = process.env.PORT || 3007;
 server.listen(PORT, () => {
   console.log(`Servidor rodando em ${PORT}`);
 });
