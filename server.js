@@ -22,7 +22,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 const io = new Server(server, {
-  cors: corsOptions, // CORS no Socket.IO
+  cors: corsOptions,
+  transports: ['websocket', 'polling']
 });
 
 // Teste para verificar o servidor
