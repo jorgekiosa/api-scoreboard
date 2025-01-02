@@ -8,31 +8,15 @@ const app = express();
 const server = http.createServer(app);
 
 // Configuração do CORS para permitir conexões externas
-/* const io = new Server(server, {
-  cors: { origin: process.env.FRONT_BASE_URL }, // Permitir conexões do frontend
-}); */
-
-const corsOptions = {
-  origin: process.env.FRONT_BASE_URL,
-  methods: ['GET', 'POST', 'OPTIONS'], 
-  allowedHeaders: ['Content-Type', 'Authorization'], 
-  credentials: true, 
-};
-
-app.use(cors(corsOptions));
-
 const io = new Server(server, {
-  cors: {
-    origin: 'https://api-scoreboard.vercel.app',
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
+  cors: { origin: process.env.FRONT_BASE_URL }, // Permitir conexões do frontend
 });
+
+app.use(cors());
 
 // Teste para verificar o servidor
 app.get('/', (req, res) => {
-  res.send(`Servidor WebSocket rodando! ${corsOptions}`);
-  console.log('corsOptions')
+  res.send('Servidor WebSocket rodando!');
 });
 
 const connectedClients = {};
@@ -119,7 +103,7 @@ io.on('connection', (socket) => {
 });
 
 // Porta onde o servidor irá rodar
-const PORT = process.env.PORT || 3007;
+const PORT = process.env.FRONT_BASE_URL || 3007;
 server.listen(PORT, () => {
   console.log(`Servidor rodando em ${PORT}`);
 });
