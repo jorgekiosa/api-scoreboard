@@ -8,11 +8,25 @@ const app = express();
 const server = http.createServer(app);
 
 // Configuração do CORS para permitir conexões externas
-const io = new Server(server, {
-  cors: { origin: process.env.FRONT_BASE_URL }, // Permitir conexões do frontend
-});
 
-app.use(cors());
+const allowedOrigin = process.env.FRONT_BASE_URL || 'https://provision-padel.netlify.app';
+
+const corsOptions = {
+  origin: allowedOrigin,
+  methods: ['GET', 'POST', 'OPTIONS'], 
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+  credentials: true, 
+};
+
+app.use(cors(corsOptions));
+
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigin,
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+
 
 // Teste para verificar o servidor
 app.get('/', (req, res) => {
