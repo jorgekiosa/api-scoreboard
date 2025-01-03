@@ -8,9 +8,6 @@ const app = express();
 const server = http.createServer(app);
 
 // Configuração do CORS para permitir conexões externas
-/* const io = new Server(server, {
-  cors: { origin: process.env.FRONT_BASE_URL }, // Permitir conexões do frontend
-}); */
 
 const allowedOrigin = process.env.FRONT_BASE_URL || 'https://provision-padel.netlify.app';
 
@@ -29,11 +26,15 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
-});
+
 
 // Teste para verificar o servidor
 app.get('/', (req, res) => {
+<<<<<<< HEAD
   res.send(`Servidor WebSocket rodando! ${corsOptions}`);
+=======
+  res.send('Servidor WebSocket rodando!');
+>>>>>>> 6334fe34f54ef0bd1b902dbc0442d9c95dceaf70
 });
 
 const connectedClients = {};
@@ -120,7 +121,7 @@ io.on('connection', (socket) => {
 });
 
 // Porta onde o servidor irá rodar
-const PORT = process.env.PORT || 3007;
+const PORT = process.env.FRONT_BASE_URL || 3007;
 server.listen(PORT, () => {
   console.log(`Servidor rodando em ${PORT}`);
 });
