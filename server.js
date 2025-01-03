@@ -18,8 +18,6 @@ const corsOptions = {
   credentials: true, 
 };
 
-app.use(cors(corsOptions));
-
 const io = new Server(server, {
   cors: {
     origin: allowedOrigin,
@@ -27,6 +25,8 @@ const io = new Server(server, {
     credentials: true,
   },
 })
+
+app.use(cors(corsOptions));
 
 
 // Teste para verificar o servidor
