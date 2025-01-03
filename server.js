@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 
 const io = new Server(server, {
   cors: {
-    origin: 'https://api-scoreboard.vercel.app',
+    origin: 'https://api-scoreboard-production.up.railway.app',
     methods: ['GET', 'POST'],
     credentials: true,
   },
