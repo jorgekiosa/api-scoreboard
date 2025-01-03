@@ -26,6 +26,7 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
+})
 
 
 // Teste para verificar o servidor
