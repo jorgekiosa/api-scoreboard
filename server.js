@@ -12,8 +12,10 @@ const server = http.createServer(app);
   cors: { origin: process.env.FRONT_BASE_URL }, // Permitir conexões do frontend
 }); */
 
+const allowedOrigin = process.env.FRONT_BASE_URL || 'https://provision-padel.netlify.app';
+
 const corsOptions = {
-  origin: process.env.FRONT_BASE_URL,
+  origin: allowedOrigin,
   methods: ['GET', 'POST', 'OPTIONS'], 
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true, 
@@ -23,7 +25,7 @@ app.use(cors(corsOptions));
 
 const io = new Server(server, {
   cors: {
-    origin: 'https://api-scoreboard-production.up.railway.app',
+    origin: allowedOrigin,
     methods: ['GET', 'POST'],
     credentials: true,
   },
