@@ -12,7 +12,7 @@ const server = http.createServer(app);
   cors: { origin: process.env.FRONT_BASE_URL }, // Permitir conexões do frontend
 }); */
 
-const allowedOrigin = process.env.FRONT_BASE_URL || 'https://provision-padel.netlify.app';
+const allowedOrigin = process.env.NODE_ENV === 'production' ? process.env.FRONT_PROD_BASE_URL || 'https://provision-padel.netlify.app': process.env.FRONT_DEV_BASE_URL || 'http://localhost:5173';
 
 const corsOptions = {
   origin: allowedOrigin,
