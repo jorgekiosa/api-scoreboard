@@ -26,15 +26,12 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
+})
 
 
 // Teste para verificar o servidor
 app.get('/', (req, res) => {
-<<<<<<< HEAD
-  res.send(`Servidor WebSocket rodando! ${corsOptions}`);
-=======
   res.send('Servidor WebSocket rodando!');
->>>>>>> 6334fe34f54ef0bd1b902dbc0442d9c95dceaf70
 });
 
 const connectedClients = {};
