@@ -13,6 +13,7 @@ const server = http.createServer(app);
 }); */
 
 const allowedOrigin = process.env.FRONT_PROD_BASE_URL || 'https://provision-padel.netlify.app';
+/* const allowedOrigin = process.env.FRONT_PROD_BASE_URL || process.env.FRONT_PROD_BASE_URL; */
 
 const corsOptions = {
   origin: allowedOrigin,
