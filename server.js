@@ -117,9 +117,17 @@ io.on('connection', (socket) => {
       io.emit('timerUpdated', { code, timer: timer.timer, isRunning: timer.isRunning });
   });
 
+  socket.on('resetTimer', ({ code }) => {
+      if (timers[code]) {
+          clearInterval(timers[code].interval);
+          timers[code] = { timer: 0, isRunning: false, interval: null };
+          io.emit('timerUpdated', { code, timer: 0, isRunning: false });
+      }
+  });
+
   socket.on('updateTimerValue', ({ code, timer }) => {
       if (!timers[code]) {
-          timers[code] = { timer: 0, isRunning: false };
+          timers[code] = { timer: 0, isRunning: false, interval: null };
       }
       timers[code].timer = timer;
       io.emit('timerUpdated', { code, timer: timer, isRunning: timers[code].isRunning });
