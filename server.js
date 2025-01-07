@@ -12,11 +12,11 @@ const server = http.createServer(app);
   cors: { origin: process.env.FRONT_BASE_URL }, // Permitir conexões do frontend
 }); */
 
-const allowedOrigin = process.env.FRONT_PROD_BASE_URL || 'https://provision-padel.netlify.app';
-/* const allowedOrigin = process.env.FRONT_PROD_BASE_URL || process.env.FRONT_PROD_BASE_URL; */
+/* const allowedOrigin = process.env.FRONT_PROD_BASE_URL || 'https://provision-padel.netlify.app'; */
+const allowedOrigin = process.env.FRONT_PROD_BASE_URL || process.env.FRONT_PROD_BASE_URL;
 
 const corsOptions = {
-  origin: allowedOrigin,
+  origin: process.env.FRONT_PROD_BASE_URL || '*',
   methods: ['GET', 'POST', 'OPTIONS'], 
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true, 
@@ -26,7 +26,7 @@ app.use(cors(corsOptions));
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigin,
+    origin: process.env.FRONT_PROD_BASE_URL || '*',
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -42,6 +42,19 @@ const connectedClients = {};
 const timers = {};
 const gameData = {}
 
+
+const syncClientData = (code) => {
+  if (connectedClients[code]) {
+      connectedClients[code].forEach(socket => {
+      if (gameData[code]) {
+          socket.emit('gameUpdated', gameData[code]);
+      }
+    /*   if (timers[code]) {
+          socket.emit('timerUpdated', timers[code]);
+      } */
+  });
+  }
+};
 // Configuração do WebSocket
 io.on('connection', (socket) => {
   const clientCode = socket.handshake.query.code;
@@ -53,6 +66,9 @@ io.on('connection', (socket) => {
       connectedClients[clientCode] = [];
     }
     connectedClients[clientCode].push(socket);
+    
+    // Sincroniza os dados no momento da conexão
+    syncClientData(clientCode);
 
     // Envia uma confirmação ao cliente
     socket.emit('connected', { message: 'Conectado ao servidor!', code: clientCode });
@@ -107,7 +123,34 @@ io.on('connection', (socket) => {
         }
     });
 
+// Força a reconexão de todos os dispositivos de um cliente específico
+  socket.on('forceReconnect', ({ code }) => {
+    console.log(`Tentando reconectar manualmente todos os clientes com o code: ${code}`);
+    
+    if (connectedClients[code]) {
+        connectedClients[code].forEach(clientSocket => {
+            // Notifica e reconecta todos os clientes
+            clientSocket.emit('forceConnected', { message: 'Reconectado com sucesso!', code });
+        });
+    } else {
+        console.log(`Nenhum cliente encontrado com o code: ${code}`);
+    }
+});
 
+
+  socket.on('forceDisconnect', ({ code }) => {
+    console.log("NADAADDDDADADADDA")
+      if (connectedClients[code]) {
+          console.log(`Desconectando cliente: ${code}`);
+          
+          connectedClients[code].forEach(clientSocket => {
+              clientSocket.emit('forceLogout'); // Notifica antes de desconectar
+              clientSocket.disconnect(true);
+          });
+
+          delete connectedClients[code]; // Remove o cliente da lista após desconectar
+      }
+  });
 
   socket.on('disconnect', () => {
     console.log('Cliente desconectado com code:', clientCode);
