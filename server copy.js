@@ -97,42 +97,31 @@ io.on('connection', (socket) => {
         }
     });
 
-  socket.on('toggleTimer', ({ code }) => {
-      if (!timers[code]) {
-          timers[code] = { timer: 0, isRunning: false, interval: null };
-      }
-
-      const timer = timers[code];
-
-      if (timer.isRunning) {
-          clearInterval(timer.interval);
-          timer.isRunning = false;
-      } else {
-          timer.isRunning = true;
-          timer.interval = setInterval(() => {
-              timer.timer++;
-              io.emit('timerUpdated', { code, timer: timer.timer, isRunning: timer.isRunning });
-          }, 1000);
-      }
-      io.emit('timerUpdated', { code, timer: timer.timer, isRunning: timer.isRunning });
-  });
-
-  socket.on('updateTimerValue', ({ code, timer }) => {
-      if (!timers[code]) {
+   // Envia o timer atual ao cliente
+   socket.on('getTimer', (data) => {
+        const { code } = data;
+        // Se não existir um timer para o código, cria um estado inicial
+        if (!timers[code]) {
           timers[code] = { timer: 0, isRunning: false };
-      }
-      timers[code].timer = timer;
-      io.emit('timerUpdated', { code, timer: timer, isRunning: timers[code].isRunning });
-  });
+        }
+        // Envia o estado do timer para o cliente
+        socket.emit('currentTimer', { code, ...timers[code] });
+    });
 
-  socket.on('getTimer', ({ code }) => {
-      if (!timers[code]) {
-          timers[code] = { timer: 0, isRunning: false };
-      }
-      const timer = timers[code];
-
-      socket.emit('timerUpdated', { code, timer: timer.timer, isRunning: timer.isRunning });
-  });
+    // Atualiza o timer em tempo real
+    socket.on('updateTimer', (data) => {
+        console.log("Timer atualizado:", data);
+        const { code, timer, isRunning } = data;
+        // Atualiza o timer e o estado de execução
+        timers[code] = { timer, isRunning };
+      
+        // Envia o estado atualizado para todos os clientes conectados
+        if (connectedClients[code]) {
+          connectedClients[code].forEach((clientSocket) => {
+            clientSocket.emit('timerUpdated', { code, timer, isRunning });
+          });
+        }
+    });
 
 // Força a reconexão de todos os dispositivos de um cliente específico
   socket.on('forceReconnect', ({ code }) => {
