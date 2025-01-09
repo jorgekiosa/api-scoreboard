@@ -38,25 +38,41 @@ app.get('/', (req, res) => {
   console.log('corsOptions')
 });
 
+let globalToken = null;
 const connectedClients = {};
 const timers = {};
 const gameData = {}
+let clientTokens = {};
 
 
-const syncClientData = (code) => {
+/* const syncClientData = (code) => {
   if (connectedClients[code]) {
       connectedClients[code].forEach(socket => {
       if (gameData[code]) {
           socket.emit('gameUpdated', gameData[code]);
       }
-    /*   if (timers[code]) {
+      if (timers[code]) {
           socket.emit('timerUpdated', timers[code]);
-      } */
+      }
   });
   }
-};
+}; */
 // Configuração do WebSocket
 io.on('connection', (socket) => {
+/*   const token = socket.handshake.auth.token;
+  clientTokens['globalToken'] = token;
+  console.log('Token armazenado no servidor111111:', clientTokens['globalToken']);
+  if (token) {
+      //globalToken = token;
+      console.log('Token armazenado no servidor:', token);
+      
+      // Envia o token diretamente após a autenticação
+      socket.emit('tokenAssigned', { token: clientTokens['globalToken'] });
+  } else {
+      console.log('Token não enviado pelo cliente.');
+      socket.emit('tokenAssigned', { token: null });
+  } */
+
   const clientCode = socket.handshake.query.code;
   console.log('Cliente conectado com code:', clientCode);
 
@@ -68,11 +84,28 @@ io.on('connection', (socket) => {
     connectedClients[clientCode].push(socket);
     
     // Sincroniza os dados no momento da conexão
-    syncClientData(clientCode);
+    //syncClientData(clientCode);
 
     // Envia uma confirmação ao cliente
     socket.emit('connected', { message: 'Conectado ao servidor!', code: clientCode });
   }
+
+    // Evento para receber e armazenar o token após o login
+  socket.on('sendToken', (token) => {
+      if (token) {
+          clientTokens['globalToken'] = token;
+          socket.emit('tokenStored', { message: 'Token armazenado com sucesso!' });
+      }
+  });
+
+  // Enviar o token ao cliente assim que solicitado
+  socket.on('requestToken', () => {
+    if (clientTokens['globalToken']) {
+        socket.emit('tokenAssigned', { token: clientTokens['globalToken'] });
+    } else {
+        socket.emit('tokenAssigned', { token: null, message: 'Token não encontrado.' });
+    }
+});
 
   // Recebe dados do frontend e emite para todos
   socket.on('updateGame', (data) => {
