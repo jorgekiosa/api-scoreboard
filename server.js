@@ -136,7 +136,6 @@ io.on('connection', (socket) => {
       }
 
       const timer = timers[code];
-
       if (timer.isRunning) {
           clearInterval(timer.interval);
           timer.isRunning = false;
@@ -171,7 +170,6 @@ io.on('connection', (socket) => {
           timers[code] = { timer: 0, isRunning: false };
       }
       const timer = timers[code];
-
       socket.emit('timerUpdated', { code, timer: timer.timer, isRunning: timer.isRunning });
   });
 
@@ -191,7 +189,6 @@ io.on('connection', (socket) => {
 
 
   socket.on('forceDisconnect', ({ code }) => {
-    console.log("NADAADDDDADADADDA")
       if (connectedClients[code]) {
           console.log(`Desconectando cliente: ${code}`);
           
