@@ -40,7 +40,7 @@ io.on('connection', (socket) => {
   console.log('Cliente conectado com code:', clientCode);
 
   if (clientCode) {
-    // Associar o socket à sala do clientCode
+  
     socket.join(clientCode);
     connectedClients[clientCode] = connectedClients[clientCode] || [];
     connectedClients[clientCode].push(socket);
@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
     socket.emit('connected', { message: 'Conectado ao servidor!', code: clientCode });
   }
 
-  // Gerenciar o envio e recebimento de tokens
+
   socket.on('sendToken', (token) => {
     if (token) {
       clientTokens['globalToken'] = token;
@@ -60,15 +60,15 @@ io.on('connection', (socket) => {
     socket.emit('tokenAssigned', { token: clientTokens['globalToken'] || null });
   });
 
-  // Atualização de dados do jogo
+  
   socket.on('updateGame', (data) => {
     const { code } = data;
     console.log(`Dados recebidos do code ${code}:`, data);
 
-    // Atualiza o estado do jogo
+    
     gameData[code] = data;
 
-    // Envia os dados apenas para os clientes associados ao mesmo código
+    
     io.to(code).emit('gameUpdated', data);
   });
 
@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Timer sincronizado por código
+  
   socket.on('toggleTimer', ({ code }) => {
     if (!timers[code]) {
       timers[code] = { timer: 0, isRunning: false, interval: null };
@@ -133,6 +133,7 @@ io.on('connection', (socket) => {
     }
   });
 });
+
 
 const PORT = process.env.PORT || 3007;
 server.listen(PORT, () => {
